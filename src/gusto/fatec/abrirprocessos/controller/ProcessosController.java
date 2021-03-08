@@ -1,29 +1,38 @@
 package gusto.fatec.abrirprocessos.controller;
 
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Logger;
 
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-import javax.swing.filechooser.FileNameExtensionFilter;
+import static java.lang.Runtime.getRuntime;
+import static java.lang.System.getProperty;
+import static javax.swing.JFileChooser.APPROVE_OPTION;
+import static javax.swing.JFileChooser.FILES_ONLY;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
 
 public class ProcessosController {
+
+	private static final Logger LOGGER = Logger.getLogger(ProcessosController.class.getName());
+
 	public void procurar(JTextField textField) {
 		String[] exec = {"exe", "sh"};
 		FileNameExtensionFilter filter = new FileNameExtensionFilter("Arquivos Executaveis", exec);
-		String dir = System.getProperty("user.home");
+		String dir = getProperty("user.home");
 		File exe = new File(dir);
+
 		JFileChooser chooser = new JFileChooser();
 		chooser.setCurrentDirectory(exe);
-		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		chooser.setFileSelectionMode(FILES_ONLY);
 		chooser.setAcceptAllFileFilterUsed(false);
 		chooser.addChoosableFileFilter(filter);
-		String path = "";
+
 		int retorno = chooser.showOpenDialog(null);
-		if (retorno == JFileChooser.APPROVE_OPTION) {
-			path = chooser.getSelectedFile().getAbsolutePath();
+
+		if (retorno == APPROVE_OPTION) {
+			String path = chooser.getSelectedFile().getAbsolutePath();
 			textField.setText(path);
 		}
 	}
@@ -31,18 +40,21 @@ public class ProcessosController {
 	public void executar(String path, JFrame tela) {
 		try {
 			if (path.contains(".exe") || path.contains(".sh")) {
-				Runtime.getRuntime().exec(path);
+				getRuntime().exec(path);
 			} else {
-				JOptionPane.showMessageDialog(null, "Caminho ou arquivo inválidos", "Erro", JOptionPane.ERROR_MESSAGE);
+				showMessageDialog(null,
+						"Caminho ou arquivo inválidos",
+						"Erro",
+						ERROR_MESSAGE);
 			}
-			Sair(tela);
+			sair(tela);
 		} catch (IOException e) {
 			String erro = e.getMessage();
-			System.out.println(erro);
+			LOGGER.warning(erro);
 		}
 	}
 
-	public void Sair(JFrame tela) {
+	public void sair(JFrame tela) {
 		tela.dispose();
 	}
 }
