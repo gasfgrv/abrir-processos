@@ -20,17 +20,17 @@ public class ProcurarActionListener implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Arquivos Executaveis", "exe", "sh");
+        var filter = new FileNameExtensionFilter("Arquivos Executaveis", "exe", "sh");
 
-        File diretorioInicial = new File(System.getProperty("user.home"));
+        var diretorioInicial = new File(System.getProperty("user.home"));
 
-        JFileChooser chooser = new JFileChooser();
+        var chooser = new JFileChooser();
         chooser.setCurrentDirectory(diretorioInicial);
         chooser.setFileSelectionMode(FILES_ONLY);
         chooser.setAcceptAllFileFilterUsed(false);
         chooser.addChoosableFileFilter(filter);
 
-        int retorno = chooser.showOpenDialog(null);
+        var retorno = chooser.showOpenDialog(null);
 
         if (retorno == APPROVE_OPTION) {
             String path = chooser.getSelectedFile().getAbsolutePath();

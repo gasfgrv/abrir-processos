@@ -1,5 +1,6 @@
 package gusto.fatec.abrirprocessos.listener;
 
+import gusto.fatec.abrirprocessos.exception.FileExecutionExcetion;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -25,52 +26,42 @@ public class ExecutarActionListener implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        String caminho = textField.getText().trim();
+        var caminho = textField.getText().trim();
 
         try {
             executarProcesso(caminho);
-
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new FileExecutionExcetion(e);
         }
     }
 
     private void executarProcesso(String caminho) throws IOException {
         if (!caminho.endsWith(".exe") && !caminho.endsWith(".sh")) {
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Caminho ou arquivo inválidos",
-                    "Erro",
-                    ERROR_MESSAGE
-            );
+            JOptionPane.showMessageDialog(null, "Caminho ou arquivo inválido", "Erro", ERROR_MESSAGE);
         }
 
-        Process exec = Runtime.getRuntime().exec(caminho);
-
+        var exec = Runtime.getRuntime().exec(caminho);
         logarSaida(exec);
-
         frame.dispose();
     }
 
     private void logarSaida(Process exec) {
         try {
-            InputStreamReader inputStreamReader = new InputStreamReader(exec.getInputStream());
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-
-            String saida = montarSaida(bufferedReader).toString();
+            var inputStreamReader = new InputStreamReader(exec.getInputStream());
+            var bufferedReader = new BufferedReader(inputStreamReader);
+            var saida = montarSaida(bufferedReader).toString();
 
             if (exec.waitFor() == 0) {
                 LOGGER.info(saida);
             }
-
         } catch (IOException | InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }
 
     private StringBuilder montarSaida(BufferedReader bufferedReader) throws IOException {
-        String linha = bufferedReader.readLine();
-        StringBuilder saida = new StringBuilder();
+        var linha = bufferedReader.readLine();
+        var saida = new StringBuilder();
 
         while (linha != null) {
             saida.append(linha).append("\n");
